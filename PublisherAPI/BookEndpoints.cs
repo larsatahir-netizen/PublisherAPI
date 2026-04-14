@@ -16,5 +16,18 @@ public static class BookEndpoints
             return await db.Books.Include(b => b.Author).AsNoTracking().ToListAsync();
         })
         .WithName("GetAllBooks");
+
+        group.MapGet("/{bookid}", async Task<Results<Ok<Book>, NotFound>> (int bookid, PubContext db) =>
+        {
+            return await db.Books.AsNoTracking()
+                .Include(b => b.Author)
+                .FirstOrDefaultAsync(b => b.BookId == bookid)
+                is Book model
+                    ? TypedResults.Ok(model)
+                    : TypedResults.NotFound();
+        })
+        .WithName("GetBookById");
     }
+
+    
 }
