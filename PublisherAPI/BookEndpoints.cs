@@ -47,6 +47,15 @@ public static class BookEndpoints
             return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
         })
         .WithName("UpdateBook");
+
+        group.MapDelete("/{bookid}", async Task<Results<Ok, NotFound>> (int bookid, PubContext db) =>
+        {
+            var affected = await db.Books
+                .Where(b => b.BookId == bookid)
+                .ExecuteDeleteAsync();
+            return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
+        })
+        .WithName("DeleteBook");
     }
     
 }
