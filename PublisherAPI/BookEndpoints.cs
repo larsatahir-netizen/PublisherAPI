@@ -27,6 +27,14 @@ public static class BookEndpoints
                     : TypedResults.NotFound();
         })
         .WithName("GetBookById");
+
+        group.MapPost("/", async (Book book, PubContext db) =>
+        {
+            db.Books.Add(book);
+            await db.SaveChangesAsync();
+            return TypedResults.Created($"/api/Book/{book.BookId}", book);
+        })
+        .WithName("CreateBook");
     }
 
     
