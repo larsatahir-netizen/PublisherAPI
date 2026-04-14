@@ -35,7 +35,18 @@ public static class BookEndpoints
             return TypedResults.Created($"/api/Book/{book.BookId}", book);
         })
         .WithName("CreateBook");
-    }
 
+        group.MapPut("/{bookid}", async Task<Results<Ok, NotFound>> (int bookid, Book book, PubContext db) =>
+        {
+            var affected = await db.Books
+                .Where(b => b.BookId == bookid)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(m => m.AuthorId, book.AuthorId)
+                    .SetProperty(m => m.Title, book.Title)
+                    );
+            return affected == 1 ? TypedResults.Ok() : TypedResults.NotFound();
+        })
+        .WithName("UpdateBook");
+    }
     
 }
